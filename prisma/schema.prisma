@@ -1,0 +1,155 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model AdminUser {
+  id        Int      @id @default(autoincrement())
+  email     String   @unique
+  password  String
+  name      String?
+  role      String   @default("admin")   // admin, superadmin
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Blog {
+  id            Int      @id @default(autoincrement())
+  title         String
+  slug          String   @unique
+  excerpt       String?
+  content       String
+  featuredImage String?  // uploaded image URL
+  category      String?
+  authorName    String?  // author display name
+  publishedAt   DateTime @default(now())
+  isPublished   Boolean  @default(true)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+model StaticPage {
+  id        Int      @id @default(autoincrement())
+  slug      String   @unique  // e.g. privacy-policy, terms-of-service, cookie-policy, about-us
+  title     String
+  content   String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Team {
+  id           Int      @id @default(autoincrement())
+  name         String
+  role         String
+  bio          String?
+  profileImage String?
+  linkedinUrl  String?
+  twitterUrl   String?
+  socialLinks  String?  // JSON array of {platform, url} objects
+  order        Int      @default(0)
+  isActive     Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model Client {        // Testimonials / client logos
+  id        Int      @id @default(autoincrement())
+  name      String
+  logoUrl   String?   // uploaded image
+  testimonial String? // optional quote
+  website   String?
+  order     Int      @default(0)
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+}
+
+model Pricing {
+  id        Int      @id @default(autoincrement())
+  name      String
+  price     String
+  features  String[] // list of features
+  isPopular Boolean  @default(false)
+  order     Int      @default(0)
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model CaseStudy {
+  id          Int      @id @default(autoincrement())
+  title       String
+  result      String?
+  description String
+  image       String?  // uploaded image URL
+  category    String?
+  order       Int      @default(0)
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Contact {
+  id        Int      @id @default(autoincrement())
+  name      String
+  email     String
+  phone     String?
+  service   String?
+  message   String
+  isRead    Boolean  @default(false)
+  submittedAt DateTime @default(now())
+}
+
+model Subscriber {
+  id        Int      @id @default(autoincrement())
+  email     String   @unique
+  subscribedAt DateTime @default(now())
+}
+
+model ServiceCategory {
+  id        Int      @id @default(autoincrement())
+  name      String   // "Digital Marketing", "Video Production", "High-Ticket"
+  icon      String?  // lucide icon name or custom icon URL
+  order     Int      @default(0)
+  isActive  Boolean  @default(true)
+  subServices SubService[]
+}
+
+model SubService {
+  id        Int      @id @default(autoincrement())
+  name      String   // e.g., "Social Media Marketing"
+  description String? // short description
+  features  String[] // list of sub-sub-services (e.g., Instagram Marketing, Facebook Marketing...)
+  icon      String?
+  serviceCategoryId Int
+  order     Int      @default(0)
+  isActive  Boolean  @default(true)
+  category  ServiceCategory @relation(fields: [serviceCategoryId], references: [id])
+}
+
+model WebsiteSetting {
+  id        Int      @id @default(autoincrement())
+  key       String   @unique
+  value     String?
+  type      String   @default("text") // text, image, boolean, json, color
+  updatedAt DateTime @updatedAt
+}
+
+model VideoTestimonial {
+  id          Int      @id @default(autoincrement())
+  title       String
+  videoUrl    String   // YouTube/Vimeo URL or uploaded file path
+  clientName  String
+  clientRole  String?
+  thumbnail   String?  // optional custom thumbnail
+  order       Int      @default(0)
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
